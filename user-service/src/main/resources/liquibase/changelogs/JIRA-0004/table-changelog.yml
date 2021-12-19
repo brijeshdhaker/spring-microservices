@@ -1,0 +1,43 @@
+## YAML Template.
+---
+databaseChangeLog:
+  - changeSet:  
+      id:  JIRA-0004-T-001
+      author:  Brijesh D.
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: false
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_assets
+                  name: ASSETS_ID
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: ASSETS_NAME
+                  type: VARCHAR(250)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: SERIAL_NO
+                  type: VARCHAR(250)
+              - column:
+                  name: STATUS
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: USERID
+                  type: BIGINT
+              - column:
+                  name: ADD_TS
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: UPD_TS
+                  type: TIMESTAMP    
+            tableName: ASSETS

@@ -1,0 +1,187 @@
+#
+# Application Profiles.
+# 
+---
+#
+server:
+  port: 8099
+spring:
+  devtools:
+    add-properties: false
+  #
+  thymeleaf:
+    cache: false
+  application:
+    name: auditlog-service
+    message: "Hello User!"
+    dummy:
+      type: type-inside-the-war
+  #
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      use-new-id-gnerator-mappings: false
+    properties:
+      hibernate:
+        show-sql: true
+        use-sql-comments: true
+        format-sql: true
+        type: info
+  #
+  datasource:
+    name: AUDIT
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:AUDIT
+  #  url: jdbc:h2:file:/apps/hostpath/databases/AUDIT;AUTO_SERVER=true;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: true
+  #
+  liquibase:
+    enabled: true
+    change-log: classpath:liquibase/master.yml
+    contexts: h2
+    parameters:
+      textColumnType: TEXT
+#
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    hystrix:
+      stream:
+        enabled: true
+    info:
+      enabled: true
+#      
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"
+#
+logging:
+  config: classpath:spring-logback.xml
+  level:
+    root: info
+
+#
+---
+#
+# local profile
+#
+---
+#
+
+spring:
+  config:
+    activate:
+      on-profile: local
+#
+  cloud:
+    stream:
+#      default:
+#        producer:
+#          useNativeEncoding: true
+#        consumer:
+#          useNativeEncoding: true
+      function:
+        definition: consumer;supplier
+      bindings:
+        consumer-in-0:
+          destination: auditlog-topic-avro
+          group: audit-cgroup
+          content-type: application/*+avro
+          consumer:
+            useNativeDecoding: true
+        supplier-out-0:
+          destination: auditlog-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeDecoding: true
+  #        input:
+  #          destination: auditlog-topic-avro
+  #          content-type: application/*+avro
+  #          group: audit-cgroup
+  #          consumer:
+  #            useNativeEncoding: true #it forces Spring Cloud Stream to delegate serialization to the provided classes.
+  #        output:
+  #          destination: auditlog-topic-avro
+  #          content-type: application/*+avro
+      kafka:
+        binder:
+          brokers: dockerhost:9092
+          zkNodes: dockerhost:2181
+          producer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
+            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            schema.registry.url: http://dockerhost:8081
+          consumer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://dockerhost:8081
+            specific.avro.reader: true
+#        bindings:
+#          process-in-0:
+#            consumer:
+#              configuration:
+#                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#                schema.registry.url: http://dockerhost:8081
+#                specific.avro.reader: true
+
+#                
+
+#
+---
+#
+#
+spring:
+  config:
+    activate:
+      on-profile: docker
+#
+  cloud:
+    stream:
+      function:
+        definition: consumer;supplier
+      bindings:
+        consumer-in-0:
+          destination: auditlog-topic-avro
+          group: audit-cgroup
+          content-type: application/*+avro
+          consumer:
+            useNativeDecoding: true
+        supplier-out-0:
+          destination: auditlog-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeDecoding: true
+      kafka:
+        binder:
+          brokers: broker:19092
+          zkNodes: zookeeper:2181
+          producer-properties:
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
+            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            schema.registry.url: http://schema-registry:8081
+          consumer-properties:
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://schema-registry:8081
+            specific.avro.reader: true
+#
+
+#
+---
+#

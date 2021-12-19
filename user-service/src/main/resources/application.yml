@@ -1,0 +1,232 @@
+#
+# Application Profiles.
+# 
+---
+#
+server:
+  port: 8094
+spring:
+  application:
+    name: user-service
+  #
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  #
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      use-new-id-gnerator-mappings: false
+    properties:
+      hibernate:
+        show-sql: true
+        use-sql-comments: true
+        format-sql: true
+        type: info
+  #
+  datasource:
+    name: USERS
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:USERS
+  #  url: jdbc:h2:file:/apps/hostpath/databases/USERS;AUTO_SERVER=true;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: true
+  #
+  liquibase:
+    enabled: true
+    change-log: classpath:liquibase/master.yml
+    contexts: h2
+    parameters:
+      textColumnType: TEXT
+#
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    info:
+      enabled: true
+logging:
+  config: classpath:spring-logback.xml
+  level:
+    root: info
+    org:
+      hibernate:
+        sql: info
+topic:
+  name: users-topic-avro
+  partitions-num: 1
+  replication-factor: 1
+
+#
+---
+#
+# local profile
+#
+---
+#
+spring:
+  config:
+    activate:
+      on-profile: local
+  #
+  cloud:
+    stream:
+      function:
+        definition: u_consumer;u_supplier;l_supplier;
+      bindings:
+        u_consumer-in-0:
+          destination: users-topic-avro
+          group: users-cgroup
+          content-type: application/*+avro
+          consumer:
+            useNativeDecoding: true
+        u_supplier-out-0:
+          destination: users-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeEncoding: true
+        l_supplier-out-0:
+          destination: auditlog-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeEncoding: true
+      kafka:
+        binder:
+          brokers: localhost:9092
+          zkNodes: localhost:2181
+          producer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
+            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            schema.registry.url: http://localhost:8081
+          consumer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://localhost:8081
+            specific.avro.reader: true
+#        bindings:
+#          u_consumer-in-0:
+#            consumer:
+#              configuration:
+#                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+#                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#                schema.registry.url: http://localhost:8081
+#                specific.avro.reader: true
+#          u_supplier-out-0:
+#            producer:
+#              configuration:
+#                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+#                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#                schema.registry.url: http://localhost:8081
+#          l_supplier-out-0:
+#            producer:
+#              configuration:
+#                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+#                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#                schema.registry.url: http://localhost:8081
+
+
+#
+#
+#  kafka:
+#    properties:
+#      bootstrap.servers: localhost:19092
+#      schema.registry.url: http://localhost:8081
+#    consumer:
+#      group-id: group_id
+#      auto-offset-reset: latest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#      properties:
+#        specific.avro.reader: true
+#        interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+#    producer:
+#      acks: all  
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#      properties:
+#        interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+#    template:
+#      default-topic: users-topic-avro  
+##
+---
+#
+#
+spring:
+  config:
+    activate:
+      on-profile: docker
+  #
+  cloud:
+    stream:
+      function:
+        definition: u_consumer;u_supplier;l_supplier;
+      bindings:
+        u_consumer-in-0:
+          destination: users-topic-avro
+          group: users-cgroup
+          content-type: application/*+avro
+          consumer:
+            useNativeDecoding: true
+        u_supplier-out-0:
+          destination: users-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeEncoding: true
+        l_supplier-out-0:
+          destination: auditlog-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeEncoding: true
+      kafka:
+        binder:
+          brokers: broker:19092
+          zkNodes: zookeeper:2181
+          producer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
+            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            schema.registry.url: http://schema-registry:8081
+          consumer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://schema-registry:8081
+            specific.avro.reader: true
+#        bindings:
+#          u_consumer-in-0:
+#            consumer:
+#              configuration:
+#                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#                schema.registry.url: http://schema-registry:8081
+#                specific.avro.reader: true
+#          u_supplier-out-0:
+#            producer:
+#              configuration:
+#                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#                schema.registry.url: http://schema-registry:8081
+#          l_supplier-out-0:
+#            producer:
+#              configuration:
+#                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+#                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#                schema.registry.url: http://schema-registry:8081
+
+#

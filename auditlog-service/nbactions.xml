@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    
+    <action>
+        <actionName>CUSTOM-clean</actionName>
+        <displayName>clean</displayName>
+        <goals>
+            <goal>clean</goal>
+        </goals>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-clean-install</actionName>
+        <displayName>clean-install</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+    </action>
+    
+    <action>
+        <actionName>run</actionName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>spring-boot:run</goal>
+        </goals>
+        <properties>
+            <run.jvmArguments>-noverify -XX:TieredStopAtLevel=1</run.jvmArguments>
+            <run.mainClass>sample.multimodule.WebuiApplication</run.mainClass>
+            <Env.SPRING_OUTPUT_ANSI_ENABLED>always</Env.SPRING_OUTPUT_ANSI_ENABLED>
+            <Env.SPRING_PROFILES_ACTIVE>local</Env.SPRING_PROFILES_ACTIVE>
+        </properties>
+    </action>
+    
+    
+    <action>
+        <actionName>CUSTOM-docker-package</actionName>
+        <displayName>docker-package</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>package</goal>
+            <goal>-Pdocker</goal>
+        </goals>
+        <properties>
+            <Env.DOCKER_HOST>tcp://192.168.99.105:2376</Env.DOCKER_HOST>
+            <Env.DOCKER_CERT_PATH>C:/Users/brijeshdhaker/.docker/machine/machines/default</Env.DOCKER_CERT_PATH>
+            <Env.DOCKER_TLS_VERIFY>1</Env.DOCKER_TLS_VERIFY>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-docker-install</actionName>
+        <displayName>docker-install</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+            <goal>-Pdocker</goal>
+        </goals>
+        <properties>
+            <Env.DOCKER_HOST>tcp://192.168.99.105:2376</Env.DOCKER_HOST>
+            <Env.DOCKER_CERT_PATH>C:/Users/brijeshdhaker/.docker/machine/machines/default</Env.DOCKER_CERT_PATH>
+            <Env.DOCKER_TLS_VERIFY>1</Env.DOCKER_TLS_VERIFY>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-minikube-install</actionName>
+        <displayName>minikube-install</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+            <goal>-Pdocker</goal>
+        </goals>
+        <properties>
+            <Env.DOCKER_HOST>tcp://192.168.99.101:2376</Env.DOCKER_HOST>
+            <Env.DOCKER_CERT_PATH>C:\Users\brijeshdhaker\.minikube\certs</Env.DOCKER_CERT_PATH>
+            <Env.DOCKER_TLS_VERIFY>1</Env.DOCKER_TLS_VERIFY>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-local-debug</actionName>
+        <displayName>local-debug</displayName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>spring-boot:run</goal>
+        </goals>
+        <properties>
+            <run.jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${jpda.address}</run.jvmArguments>
+            <Env.SPRING_OUTPUT_ANSI_ENABLED>always</Env.SPRING_OUTPUT_ANSI_ENABLED>
+            <Env.SPRING_PROFILES_ACTIVE>local</Env.SPRING_PROFILES_ACTIVE>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>run.single.main</actionName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dspring.profiles.active=local -classpath %classpath ${packageClassName}</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>debug.single.main</actionName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dspring.profiles.active=local -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName}</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>debug</actionName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dspring.profiles.active=local -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath sample.multimodule.WebuiApplication</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-run-mysql</actionName>
+        <displayName>run-mysql</displayName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>spring-boot:run</goal>
+        </goals>
+        <properties>
+            <run.jvmArguments>-noverify -XX:TieredStopAtLevel=1</run.jvmArguments>
+            <run.mainClass>sample.multimodule.WebuiApplication</run.mainClass>
+            <Env.SPRING_OUTPUT_ANSI_ENABLED>always</Env.SPRING_OUTPUT_ANSI_ENABLED>
+            <Env.SPRING_PROFILES_ACTIVE>local-mysql</Env.SPRING_PROFILES_ACTIVE>
+        </properties>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-debug-mysql</actionName>
+        <displayName>debug-mysql</displayName>
+        <preAction>build-with-dependencies</preAction>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dspring.profiles.active=local-mysql -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath sample.multimodule.WebuiApplication</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    
+</actions>

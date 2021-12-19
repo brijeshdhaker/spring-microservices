@@ -1,0 +1,14 @@
+## YAML Template.
+---
+databaseChangeLog:
+  - changeSet:  
+      id:  0001  
+      author:  Brijesh D.
+      runOnChange: true
+      changes:
+        - sqlFile:
+            path: objects/audit-type-tables.sql
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: objects/auditlog-table.sql
+            relativeToChangelogFile: true

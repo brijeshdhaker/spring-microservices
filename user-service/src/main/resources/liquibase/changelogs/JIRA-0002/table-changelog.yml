@@ -1,0 +1,35 @@
+## YAML Template.
+---
+databaseChangeLog:
+  - changeSet:  
+      id:  JIRA-0002-T-001  
+      author:  Brijesh D.
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_role
+                  name: ID
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: NAME
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: STATUS
+                  type: VARCHAR(20)
+              - column:
+                  name: ADD_TS
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: UPD_TS
+                  type: TIMESTAMP    
+            tableName: ROLE

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    
+    <action>
+        <actionName>CUSTOM-clean</actionName>
+        <displayName>clean</displayName>
+        <goals>
+            <goal>clean</goal>
+        </goals>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-clean-package</actionName>
+        <displayName>clean-package</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>package</goal>
+        </goals>
+    </action>
+        
+    <action>
+        <actionName>CUSTOM-clean-install</actionName>
+        <displayName>clean-install</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+    </action>
+    
+    <action>
+        <actionName>CUSTOM-docker-package</actionName>
+        <displayName>docker-package</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>package</goal>
+            <goal>-Pdocker</goal>
+        </goals>
+        <properties>
+            <Env.DOCKER_HOST>tcp://192.168.99.105:2376</Env.DOCKER_HOST>
+            <Env.DOCKER_CERT_PATH>C:/Users/brijeshdhaker/.docker/machine/machines/default</Env.DOCKER_CERT_PATH>
+            <Env.DOCKER_TLS_VERIFY>1</Env.DOCKER_TLS_VERIFY>
+        </properties>
+    </action>
+    
+</actions>

@@ -1,0 +1,45 @@
+#
+# Application Profiles.
+# 
+---
+#
+server:
+  port: 9100
+spring:
+  devtools:
+    add-properties: false
+#
+  thymeleaf:
+    cache: false
+  application:
+    name: webui-service
+    message: "Hello User!"
+#
+logging:
+  level:
+    root: info
+
+#
+---
+#
+# local profile
+#
+---
+#
+spring:
+  profiles: local
+#
+
+#
+
+#
+---
+#
+#
+spring:
+  profiles: docker
+#
+
+#
+---
+#

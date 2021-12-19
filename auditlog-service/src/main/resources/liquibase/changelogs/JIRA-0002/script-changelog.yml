@@ -1,0 +1,10 @@
+## YAML Template.
+---
+databaseChangeLog:
+  - changeSet:  
+      id:  JIRA-0002-S-001  
+      author:  Brijesh D.
+      changes:
+        - sqlFile:
+            path: ../../scripts/account-data.sql
+            relativeToChangelogFile: true

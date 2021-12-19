@@ -1,0 +1,58 @@
+#
+# Application Profiles.
+# 
+---
+#
+server:
+  port: 8100
+spring:
+  application:
+    name: gateway-service
+#
+  liquibase:
+    enabled: false
+#
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-route
+          uri: http://localhost:8094
+          predicates:
+          - Path=/api/user/**
+        - id: auditlog-service-route
+          uri: http://localhost:8099
+          predicates:
+          - Path=/api/audit/**
+#
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+#
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+#
+---
+#
+# local profile
+#
+---
+#
+spring:
+  profiles: local  
+
+#
+---
+#
+# docker profile
+#
+---
+#
+spring:
+  profiles: docker  
+
+#
