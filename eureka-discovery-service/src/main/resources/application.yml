@@ -1,0 +1,56 @@
+#
+# Application Profiles.
+#
+---
+#
+spring:
+  application:
+    name: eureka-discovery-service
+server:
+  port: 8761
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+#
+---
+#
+# local profile
+#
+---
+#
+
+spring:
+  config:
+    activate:
+      on-profile: local
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+    preferIpAddress: true
+
+#
+---
+#
+# docker profile
+#
+---
+#
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-discovery-service:8761/eureka
+    instance:
+    preferIpAddress: true

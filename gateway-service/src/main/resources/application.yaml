@@ -16,11 +16,11 @@ spring:
     gateway:
       routes:
         - id: user-service-route
-          uri: http://localhost:8094
+          uri: lb://USER-SERVICE
           predicates:
           - Path=/api/user/**
         - id: auditlog-service-route
-          uri: http://localhost:8099
+          uri: lb://AUDITLOG-SERVICE
           predicates:
           - Path=/api/audit/**
 #
@@ -44,7 +44,13 @@ logging:
 #
 spring:
   profiles: local  
-
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+    preferIpAddress: true
 #
 ---
 #
@@ -54,5 +60,11 @@ spring:
 #
 spring:
   profiles: docker  
-
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-discovery-service:8761/eureka
+    instance:
+    preferIpAddress: true
 #

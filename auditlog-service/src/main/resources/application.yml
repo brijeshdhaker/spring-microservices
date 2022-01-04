@@ -6,16 +6,12 @@
 server:
   port: 8099
 spring:
-  devtools:
-    add-properties: false
-  #
-  thymeleaf:
-    cache: false
   application:
     name: auditlog-service
-    message: "Hello User!"
     dummy:
-      type: type-inside-the-war
+      type: web
+  devtools:
+    add-properties: false
   #
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
@@ -52,6 +48,8 @@ spring:
       textColumnType: TEXT
 #
 management:
+  security:
+    enabled: false
   endpoints:
     enabled-by-default: true
     web:
@@ -86,6 +84,13 @@ spring:
     activate:
       on-profile: local
 #
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+    preferIpAddress: true
+#
   cloud:
     stream:
 #      default:
@@ -118,18 +123,18 @@ spring:
   #          content-type: application/*+avro
       kafka:
         binder:
-          brokers: dockerhost:9092
-          zkNodes: dockerhost:2181
+          brokers: localhost:9092
+          zkNodes: localhost:2181
           producer-properties:
             interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
             key.serializer: org.apache.kafka.common.serialization.StringSerializer
             value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-            schema.registry.url: http://dockerhost:8081
+            schema.registry.url: http://localhost:8081
           consumer-properties:
             interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
             key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-            schema.registry.url: http://dockerhost:8081
+            schema.registry.url: http://localhost:8081
             specific.avro.reader: true
 #        bindings:
 #          process-in-0:
@@ -150,6 +155,13 @@ spring:
   config:
     activate:
       on-profile: docker
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-discovery-service:8761/eureka
+    instance:
+    preferIpAddress: true
 #
   cloud:
     stream:

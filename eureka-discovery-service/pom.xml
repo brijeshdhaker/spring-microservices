@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>sample.multimodule.services</groupId>
+	<artifactId>eureka-discovery-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>eureka-discovery-service</name>
+	<description>Eureka Discovery Service for Spring Boot</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<spring-cloud.version>2021.0.0</spring-cloud.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<finalName>eureka-discovery-service</finalName>
+		<plugins>
+
+			<!-- Spring Boot plugins -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!--
+                    <mainClass>sample.multimodule.SampleApplication</mainClass>
+                    <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${jpda.address}</jvmArguments>
+                    -->
+				</configuration>
+				<!--
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>docker</classifier>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                -->
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Jar local copy -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/jars/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/target</directory>
+									<includes>
+										<include>${project.build.finalName}.${project.packaging}</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Maven Docker plugins -->
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.36.1</version>
+				<executions>
+					<execution>
+						<id>docker-build</id>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!--
+                    <dockerHost>${dockerhost}</dockerHost>
+                    <certPath>${dockercerts}</certPath>
+                    -->
+					<useColor>true</useColor>
+					<images>
+						<image>
+							<name>brijeshdhaker/%a:%v</name>
+							<build>
+								<from>openjdk:8-jre-slim</from>
+								<runCmds>
+									<run>mkdir -p /apps/libs</run>
+									<run>mkdir -p /apps/configs</run>
+								</runCmds>
+								<ports>
+									<port>8099</port>
+								</ports>
+								<entryPoint>
+									<!-- exec form for ENTRYPOINT -->
+									<exec>
+										<arg>java</arg>
+										<arg>-Djava.security.egd=file:/dev/./urandom</arg>
+										<arg>-Dspring.profiles.active=docker</arg>
+										<arg>-jar</arg>
+										<arg>/apps/eureka-discovery-service.jar</arg>
+									</exec>
+								</entryPoint>
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+									<targetDir>/</targetDir>
+									<inline>
+										<fileSets>
+											<fileSet>
+												<directory>${basedir}/target</directory>
+												<includes>
+													<include>eureka-discovery-service.jar</include>
+												</includes>
+												<outputDirectory>/apps</outputDirectory>
+											</fileSet>
+										</fileSets>
+									</inline>
+								</assembly>
+							</build>
+						</image>
+					</images>
+					<!--
+                    <imagesMap>
+                        <service>
+                            <name>brijeshdhaker/%a:%v</name>
+                        </service>
+                    </imagesMap>
+                    -->
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

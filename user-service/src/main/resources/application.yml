@@ -47,7 +47,16 @@ spring:
     parameters:
       textColumnType: TEXT
 #
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+    preferIpAddress: true
+#
 management:
+  security:
+    enabled: false
   endpoints:
     enabled-by-default: true
     web:
@@ -171,6 +180,13 @@ spring:
   config:
     activate:
       on-profile: docker
+#
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-discovery-service:8761/eureka
+    instance:
+    preferIpAddress: true
   #
   cloud:
     stream:

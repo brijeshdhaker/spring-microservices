@@ -12,6 +12,7 @@
 
     <modules>
         <module>common-utilities</module>
+        <module>eureka-discovery-service</module>
         <module>user-service</module>
         <module>auditlog-service</module>
         <module>webui-service</module>

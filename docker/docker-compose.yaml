@@ -18,6 +18,13 @@ services:
       - 8099:8099
 
   #
+  eureka-discovery-service:
+    image: brijeshdhaker/eureka-discovery-service:0.0.1-SNAPSHOT
+    container_name: eureka-discovery-service
+    ports:
+      - 8761:8761
+
+  #
   gateway-service:
     image: brijeshdhaker/gateway-service:0.0.1-SNAPSHOT
     container_name: gateway-service
