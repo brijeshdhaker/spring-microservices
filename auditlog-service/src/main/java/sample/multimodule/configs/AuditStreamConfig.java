@@ -22,13 +22,13 @@ import sample.multimodule.dto.avro.AuditlogDTO;
 @Configuration
 public class AuditStreamConfig {
 
-    @Bean
-    public DirectProcessor<AuditlogDTO> publisher(){
+    @Bean("auditlogProcessor")
+    public DirectProcessor<AuditlogDTO> auditlogProcessor(){
         return DirectProcessor.create();
     }
 
-    @Bean
-    public FluxSink<AuditlogDTO> sink(DirectProcessor<AuditlogDTO> publisher){
+    @Bean("auditlogPublisher")
+    public FluxSink<AuditlogDTO> auditlogPublisher(DirectProcessor<AuditlogDTO> publisher){
         return publisher.sink();
     }
 

@@ -70,7 +70,10 @@ logging:
   config: classpath:spring-logback.xml
   level:
     root: info
-
+topic:
+  name: auditlog-topic-avro
+  partitions-num: 1
+  replication-factor: 1
 #
 ---
 #
@@ -78,11 +81,42 @@ logging:
 #
 ---
 #
-
 spring:
   config:
     activate:
       on-profile: local
+  #
+  cloud:
+    stream:
+      function:
+        definition: l_consumer;l_supplier;
+      bindings:
+        l_consumer-in-0:
+          destination: auditlog-topic-avro
+          group: auditlog-cgroup
+          content-type: application/*+avro
+          consumer:
+            useNativeDecoding: true
+        l_supplier-out-0:
+          destination: auditlog-topic-avro
+          content-type: application/*+avro
+          producer:
+            useNativeEncoding: true
+      kafka:
+        binder:
+          brokers: kafka-broker:9092
+          zkNodes: zookeeper:2181
+          producer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
+            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            schema.registry.url: http://schema-registry:8081
+          consumer-properties:
+            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://schema-registry:8081
+            specific.avro.reader: true
 #
 eureka:
   client:
@@ -90,62 +124,6 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     instance:
     preferIpAddress: true
-#
-  cloud:
-    stream:
-#      default:
-#        producer:
-#          useNativeEncoding: true
-#        consumer:
-#          useNativeEncoding: true
-      function:
-        definition: consumer;supplier
-      bindings:
-        consumer-in-0:
-          destination: auditlog-topic-avro
-          group: audit-cgroup
-          content-type: application/*+avro
-          consumer:
-            useNativeDecoding: true
-        supplier-out-0:
-          destination: auditlog-topic-avro
-          content-type: application/*+avro
-          producer:
-            useNativeDecoding: true
-  #        input:
-  #          destination: auditlog-topic-avro
-  #          content-type: application/*+avro
-  #          group: audit-cgroup
-  #          consumer:
-  #            useNativeEncoding: true #it forces Spring Cloud Stream to delegate serialization to the provided classes.
-  #        output:
-  #          destination: auditlog-topic-avro
-  #          content-type: application/*+avro
-      kafka:
-        binder:
-          brokers: localhost:9092
-          zkNodes: localhost:2181
-          producer-properties:
-            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
-            key.serializer: org.apache.kafka.common.serialization.StringSerializer
-            value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-            schema.registry.url: http://localhost:8081
-          consumer-properties:
-            interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
-            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-            schema.registry.url: http://localhost:8081
-            specific.avro.reader: true
-#        bindings:
-#          process-in-0:
-#            consumer:
-#              configuration:
-#                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-#                schema.registry.url: http://dockerhost:8081
-#                specific.avro.reader: true
-
-#                
 
 #
 ---
@@ -166,15 +144,15 @@ eureka:
   cloud:
     stream:
       function:
-        definition: consumer;supplier
+        definition: l_consumer;l_supplier;
       bindings:
-        consumer-in-0:
+        l_consumer-in-0:
           destination: auditlog-topic-avro
           group: audit-cgroup
           content-type: application/*+avro
           consumer:
             useNativeDecoding: true
-        supplier-out-0:
+        l_supplier-out-0:
           destination: auditlog-topic-avro
           content-type: application/*+avro
           producer:

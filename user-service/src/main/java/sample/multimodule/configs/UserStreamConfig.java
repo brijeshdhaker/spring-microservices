@@ -25,17 +25,17 @@ public class UserStreamConfig {
     }
 
     @Bean("auditlogProcessor")
-    public DirectProcessor<AuditlogDTO> auditlogPublisher(){
+    public DirectProcessor<AuditlogDTO> auditlogProcessor(){
         return DirectProcessor.create();
     }
     
     @Bean("userPublisher")
-    public FluxSink<UserDTO> userSink(DirectProcessor<UserDTO> publisher){
+    public FluxSink<UserDTO> userPublisher(DirectProcessor<UserDTO> publisher){
         return publisher.sink();
     }
     
     @Bean("auditlogPublisher")
-    public FluxSink<AuditlogDTO> auditLogSink(DirectProcessor<AuditlogDTO> publisher){
+    public FluxSink<AuditlogDTO> auditlogPublisher(DirectProcessor<AuditlogDTO> publisher){
         return publisher.sink();
     }
 }

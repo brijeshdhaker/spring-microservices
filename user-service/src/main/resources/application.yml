@@ -112,18 +112,18 @@ spring:
             useNativeEncoding: true
       kafka:
         binder:
-          brokers: localhost:9092
-          zkNodes: localhost:2181
+          brokers: kafka-broker:9092
+          zkNodes: zookeeper:2181
           producer-properties:
             interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
             key.serializer: org.apache.kafka.common.serialization.StringSerializer
             value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-            schema.registry.url: http://localhost:8081
+            schema.registry.url: http://schema-registry:8081
           consumer-properties:
             interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
             key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-            schema.registry.url: http://localhost:8081
+            schema.registry.url: http://schema-registry:8081
             specific.avro.reader: true
 #        bindings:
 #          u_consumer-in-0:

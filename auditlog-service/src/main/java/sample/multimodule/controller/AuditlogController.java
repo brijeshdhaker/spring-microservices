@@ -8,6 +8,7 @@ package sample.multimodule.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ public class AuditlogController {
     @Autowired
     AuditlogService auditlogService;
 
+    @Qualifier("auditlogPublisher")
     @Autowired
     private FluxSink<AuditlogDTO> sink;
 

@@ -30,23 +30,23 @@ public class UserEventHandler {
     
     @Qualifier("userProcessor")
     @Autowired
-    private DirectProcessor<UserDTO> userSource;
+    private DirectProcessor<UserDTO> userProcessor;
     
     @Qualifier("auditlogProcessor")
     @Autowired
-    private DirectProcessor<AuditlogDTO> auditSource;
+    private DirectProcessor<AuditlogDTO> auditlogProcessor;
     
     @Autowired
     private UserService userService;
 
     @Bean
     public Supplier<Flux<UserDTO>> u_supplier(){
-        return () -> Flux.from(userSource);
+        return () -> Flux.from(userProcessor);
     };
 
     @Bean
     public Supplier<Flux<AuditlogDTO>> l_supplier(){
-        return () -> Flux.from(auditSource);
+        return () -> Flux.from(auditlogProcessor);
     };
     
     @Bean

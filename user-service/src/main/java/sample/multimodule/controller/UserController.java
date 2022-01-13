@@ -90,7 +90,8 @@ public class UserController {
             if (_user != null) {
                 BeanUtils.copyProperties(input, _user);
                 _user.setId(id);
-                this.userSink.next(ServiceHelper.toUserDTO(_user));
+                userService.saveUser(_user);
+                //this.userSink.next(ServiceHelper.toUserDTO(_user));
                 appResponse  = new AppRestResponse(String.format("User with id %d successfully updated.",_user.getId()));
                 httpResponse =  new ResponseEntity<>(appResponse, HttpStatus.OK);
             } else {
@@ -110,7 +111,8 @@ public class UserController {
         ResponseEntity<AppRestResponse> httpResponse;
         AppRestResponse appResponse;
         try {
-            this.userSink.next(ServiceHelper.toUserDTO(user));
+            userService.saveUser(user);
+            //this.userSink.next(ServiceHelper.toUserDTO(user));
             appResponse  = new AppRestResponse("User successfully added in system.");
             httpResponse =  new ResponseEntity<>(appResponse, HttpStatus.CREATED);
         } catch (Exception ex) {

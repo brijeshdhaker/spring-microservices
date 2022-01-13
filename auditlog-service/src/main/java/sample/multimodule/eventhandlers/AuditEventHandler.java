@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.DirectProcessor;
@@ -26,14 +27,15 @@ public class AuditEventHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditEventHandler.class);
 
+    @Qualifier("auditlogProcessor")
     @Autowired
-    private DirectProcessor<AuditlogDTO> source;
+    private DirectProcessor<AuditlogDTO> auditlogProcessor;
 
     @Autowired
     private AuditlogService auditlogService;
 
     @Bean
-    public Consumer<Flux<AuditlogDTO>> consumer(){
+    public Consumer<Flux<AuditlogDTO>> l_consumer(){
         return (flux) -> flux.subscribe(s_auditlog -> {
             try {
 
@@ -62,8 +64,8 @@ public class AuditEventHandler {
     }
 
     @Bean
-    public Supplier<Flux<AuditlogDTO>> supplier(){
-        return () -> Flux.from(source);
+    public Supplier<Flux<AuditlogDTO>> l_supplier(){
+        return () -> Flux.from(auditlogProcessor);
     };
 
     /*
